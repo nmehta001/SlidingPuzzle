@@ -40,29 +40,56 @@ const randomColor = (() => {
     };
 })();
 
-function CanvasGrid(canvas) {
-    this.height = canvas.height;
-    this.width = canvas.width;
-    this.ctx = canvas.getContext('2d');
-
-    for (let i = 0; i <= this.width; i += 84) {
-        this.ctx.moveTo(.5 + i, 0);
-        this.ctx.lineTo(.5 + i, this.height);
+function clickableGrid(rows, cols, callback) {
+    let i = 0;
+    const grid = document.createElement('table');
+    grid.className = 'grid';
+    for (let r = 0; r < rows; r++) {
+        let tr = grid.appendChild(document.createElement('tr'));
+        for (let c = 0; c < cols; c++) {
+            let cell = tr.appendChild(document.createElement('td'));
+            cell.innerHTML = i++;
+            cell.addEventListener('click', (function (el, r, c, i) {
+                return function () {
+                    callback(el, r, c, i);
+                }
+            })(cell, r, c, i), false);
+        }
     }
-
-    for (let i = 0; i <= this.height; i += 84) {
-        this.ctx.moveTo(0, .5 + i);
-        this.ctx.lineTo(this.width, .5 + i);
-    }
-
-    this.ctx.strokeStyle = "black";
-    this.ctx.stroke();
+    return grid;
 }
+
+// function CanvasGrid(canvas) {
+//     this.height = canvas.height;
+//     this.width = canvas.width;
+//     this.ctx = canvas.getContext('2d');
+//
+//     this.tileSize = 84 * 84;
+//     this.tiles = 20;
+//
+//     CanvasGrid.prototype.drawGrid = function () {
+//         for (let i = 0; i <= this.width; i += 84) {
+//             this.ctx.moveTo(.5 + i, 0);
+//             this.ctx.lineTo(.5 + i, this.height);
+//         }
+//
+//         for (let i = 0; i <= this.height; i += 84) {
+//             this.ctx.moveTo(0, .5 + i);
+//             this.ctx.lineTo(this.width, .5 + i);
+//         }
+//
+//         this.ctx.strokeStyle = "black";
+//         this.ctx.stroke();
+//     };
+//
+//     CanvasGrid.prototype.getGridPosition = function (event) {
+//         console.log(event)
+//     }
+// }
 
 /**
  * Canvas State Modifications and methods
  */
-
 function CanvasState(canvas) {
     this.canvas = canvas;
     this.width = canvas.width;
@@ -167,8 +194,6 @@ CanvasState.prototype.draw = function () {
         }
 
         this.valid = true;
-
-        new CanvasGrid(this.canvas)
     }
 };
 
@@ -209,12 +234,26 @@ const blocks = [
 ];
 
 function init() {
+    let lastClicked;
     const canvas = document.getElementById('canvas');
     const state = new CanvasState(canvas);
 
     blocks.forEach(block => {
         state.addBlock(new Block(block.height, block.letter, block.width, block.x, block.y));
     });
+
+    const grid = clickableGrid(5, 4, function (el, row, col, i) {
+        console.log("You clicked on element:", el);
+        console.log("You clicked on row:", row);
+        console.log("You clicked on col:", col);
+        console.log("You clicked on item #:", i);
+
+        el.className = 'clicked';
+        if (lastClicked) lastClicked.className = '';
+        lastClicked = el;
+    });
+
+    document.body.appendChild(grid);
 }
 
 window.addEventListener('load', () => {
