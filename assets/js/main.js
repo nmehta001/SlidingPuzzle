@@ -104,8 +104,6 @@ function CanvasState(canvas) {
             myState.selection.x = mouse.x - myState.dragOffX;
             myState.selection.y = mouse.y - myState.dragOffY;
             myState.valid = false;
-
-            
         }
     }, true);
 
@@ -131,29 +129,22 @@ CanvasState.prototype.clear = function () {
     this.ctx.clearRect(0, 0, this.width, this.height);
 };
 
-// While draw is called as often as the INTERVAL variable demands,
 // It only ever does something if the canvas gets invalidated by our code
 CanvasState.prototype.draw = function () {
     // if our state is invalid, redraw and validate!
     if (!this.valid) {
-        var ctx = this.ctx;
-        var shapes = this.blocks;
+        let ctx = this.ctx;
+        let blocks = this.blocks;
         this.clear();
 
-        // ** Add stuff you want drawn in the background all the time here **
-
-        // draw all blocks
-        var l = shapes.length;
-        for (var i = 0; i < l; i++) {
-            var shape = shapes[i];
+        for (let i = 0; i < blocks.length; i++) {
+            let block = blocks[i];
             // We can skip the drawing of elements that have moved off the screen:
-            if (shape.x > this.width || shape.y > this.height ||
-                shape.x + shape.w < 0 || shape.y + shape.h < 0) continue;
-            shapes[i].draw(ctx);
+            if (block.x > this.width || block.y > this.height || block.x + block.w < 0 || block.y + block.height < 0) continue;
+            blocks[i].draw(ctx);
         }
 
         // draw selection
-        // right now this is just a stroke along the edge of the selected Shape
         if (this.selection != null) {
             ctx.strokeStyle = this.selectionColor;
             ctx.lineWidth = this.selectionWidth;
@@ -161,15 +152,12 @@ CanvasState.prototype.draw = function () {
             ctx.strokeRect(mySel.x, mySel.y, mySel.width, mySel.height);
         }
 
-        // ** Add stuff you want drawn on top all the time here **
-
         this.valid = true;
     }
 };
 
-
-// Creates an object with x and y defined, set to the mouse position relative to the state's canvas
-// If you wanna be super-correct this can be tricky, we have to worry about padding and borders
+// Creates an object with x and y defined,
+// set to the mouse position relative to the state's canvas
 CanvasState.prototype.getMouse = function (e) {
     let element = this.canvas, offsetX = 0, offsetY = 0, mouseX, mouseY;
 
