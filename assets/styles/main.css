@@ -1,0 +1,11 @@
+.grid {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    max-width: 336px;
+}
+
+.grid__item {
+    border: 1px solid #e7004e;
+    padding: 2rem;
+    text-align: center;
+}
