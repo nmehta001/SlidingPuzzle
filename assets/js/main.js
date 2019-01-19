@@ -40,8 +40,27 @@ const randomColor = (() => {
     };
 })();
 
+function CanvasGrid(canvas) {
+    this.height = canvas.height;
+    this.width = canvas.width;
+    this.ctx = canvas.getContext('2d');
+
+    for (let i = 0; i <= this.width; i += 84) {
+        this.ctx.moveTo(.5 + i, 0);
+        this.ctx.lineTo(.5 + i, this.height);
+    }
+
+    for (let i = 0; i <= this.height; i += 84) {
+        this.ctx.moveTo(0, .5 + i);
+        this.ctx.lineTo(this.width, .5 + i);
+    }
+
+    this.ctx.strokeStyle = "black";
+    this.ctx.stroke();
+}
+
 /**
- * Canvas Modifications and methods
+ * Canvas State Modifications and methods
  */
 
 function CanvasState(canvas) {
@@ -49,8 +68,6 @@ function CanvasState(canvas) {
     this.width = canvas.width;
     this.height = canvas.height;
     this.ctx = canvas.getContext('2d');
-
-    // **** Keep track of state! ****
 
     // Setting to false will redraw Canvas
     this.valid = false;
@@ -72,8 +89,7 @@ function CanvasState(canvas) {
         let mouseX = mouse.x;
         let mouseY = mouse.y;
         let blocks = myState.blocks;
-        let l = blocks.length;
-        for (let i = l - 1; i >= 0; i--) {
+        for (let i = blocks.length - 1; i >= 0; i--) {
             if (blocks[i].contains(mouseX, mouseY)) {
                 let mySel = blocks[i];
                 // Keep track of where in the object we clicked
@@ -88,8 +104,6 @@ function CanvasState(canvas) {
             }
         }
 
-        console.log(myState.selection)
-        // havent returned means we have failed to select anything.
         // If there was an object selected, we deselect it
         if (myState.selection) {
             myState.selection = null;
@@ -104,6 +118,7 @@ function CanvasState(canvas) {
             myState.selection.x = mouse.x - myState.dragOffX;
             myState.selection.y = mouse.y - myState.dragOffY;
             myState.valid = false;
+            console.log(myState)
         }
     }, true);
 
@@ -111,7 +126,6 @@ function CanvasState(canvas) {
         myState.isDragging = false;
     }, true);
 
-    // **** Options! ****
     this.selectionColor = '#E7004E';
     this.selectionWidth = 1;
     this.interval = 30;
@@ -153,6 +167,8 @@ CanvasState.prototype.draw = function () {
         }
 
         this.valid = true;
+
+        new CanvasGrid(this.canvas)
     }
 };
 
