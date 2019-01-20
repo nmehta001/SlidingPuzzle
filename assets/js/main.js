@@ -1,4 +1,33 @@
 /**
+ * Moveset
+ */
+
+function MoveSet(moveIndex, permutation) {
+    const SHIFT_X = [0, 1, 0, -2, 0, 2, 0, -2];
+    const SHIFT_Y = [1, 0, -1, 0, 2, 0, -2, 0];
+
+    this.moveIndex = moveIndex;
+    this.permutation = permutation;
+}
+
+MoveSet.prototype.getMovedIndex = function () {
+    return this.moveIndex;
+};
+
+MoveSet.prototype.setMoveIndex = function (moveIndex) {
+    return this.moveIndex = moveIndex;
+};
+
+MoveSet.prototype.getPermutation = function () {
+    return this.permutation;
+};
+
+MoveSet.prototype.setPermutation = function (permutation) {
+    this.permutation = permutation;
+};
+
+
+/**
  * Block modifications and methods
  */
 
@@ -58,34 +87,6 @@ function clickableGrid(rows, cols, callback) {
     }
     return grid;
 }
-
-// function CanvasGrid(canvas) {
-//     this.height = canvas.height;
-//     this.width = canvas.width;
-//     this.ctx = canvas.getContext('2d');
-//
-//     this.tileSize = 84 * 84;
-//     this.tiles = 20;
-//
-//     CanvasGrid.prototype.drawGrid = function () {
-//         for (let i = 0; i <= this.width; i += 84) {
-//             this.ctx.moveTo(.5 + i, 0);
-//             this.ctx.lineTo(.5 + i, this.height);
-//         }
-//
-//         for (let i = 0; i <= this.height; i += 84) {
-//             this.ctx.moveTo(0, .5 + i);
-//             this.ctx.lineTo(this.width, .5 + i);
-//         }
-//
-//         this.ctx.strokeStyle = "black";
-//         this.ctx.stroke();
-//     };
-//
-//     CanvasGrid.prototype.getGridPosition = function (event) {
-//         console.log(event)
-//     }
-// }
 
 /**
  * Canvas State Modifications and methods
