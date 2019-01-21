@@ -1,5 +1,5 @@
 /**
- * Moveset
+ * Move set
  */
 
 function MoveSet(moveIndex, permutation) {
@@ -55,7 +55,6 @@ Block.prototype.contains = function (mouseX, mouseY) {
 };
 
 const randomColor = (() => {
-    "use strict";
 
     const randomInt = (min, max) => {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -69,22 +68,22 @@ const randomColor = (() => {
     };
 })();
 
-function clickableGrid(rows, cols, callback) {
-    let i = 0;
+function Grid(rows, cols, callback) {
     const grid = document.createElement('table');
     grid.className = 'grid';
+
     for (let r = 0; r < rows; r++) {
         let tr = grid.appendChild(document.createElement('tr'));
         for (let c = 0; c < cols; c++) {
             let cell = tr.appendChild(document.createElement('td'));
-            cell.innerHTML = i++;
-            cell.addEventListener('click', (function (el, r, c, i) {
-                return function () {
-                    callback(el, r, c, i);
+            cell.addEventListener('click', ((el, r, c) => {
+                return () => {
+                    callback(el, r, c);
                 }
-            })(cell, r, c, i), false);
+            })(cell, r, c), false);
         }
     }
+
     return grid;
 }
 
@@ -157,6 +156,7 @@ function CanvasState(canvas) {
     this.selectionColor = '#E7004E';
     this.selectionWidth = 1;
     this.interval = 30;
+
     setInterval(function () {
         myState.draw();
     }, myState.interval);
@@ -243,7 +243,7 @@ function init() {
         state.addBlock(new Block(block.height, block.letter, block.width, block.x, block.y));
     });
 
-    const grid = clickableGrid(5, 4, function (el, row, col, i) {
+    const grid = Grid(5, 4, function (el, row, col, i) {
         console.log("You clicked on element:", el);
         console.log("You clicked on row:", row);
         console.log("You clicked on col:", col);
