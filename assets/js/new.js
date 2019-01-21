@@ -24,11 +24,9 @@ function Grid(rows, cols) {
     const grid = document.createElement("table");
     grid.className = "grid";
 
-    let i = 0;
     for (let r = 0; r < rows; r++) {
         let tr = grid.appendChild(document.createElement("tr"));
         for (let c = 0; c < cols; c++) {
-            i++;
             tr.appendChild(document.createElement("td"));
         }
     }
@@ -43,21 +41,33 @@ function GridState() {
     this.solutions = buckets.Stack();
 }
 
-GridState.prototype.setInitialState = function () {
+GridState.prototype.setInitialState = function (grid) {
     pieces.forEach((piece, i) => {
         let item = [piece, coords[i]];
         this.initalState.push(item);
     });
 
-    console.log(this.initalState)
+    console.log(grid)
 };
 
 GridState.prototype.getPermutations = function () {
+    let lastState = this;
+
+    pieces.forEach((piece, i) => {
+        for (let move = 0; move < 8; move++) {
+            let shifted = new GridState();
+
+            if (this.areStatesSimilar(lastState, shifted)) {
+                this.seen.add(shifted);
+            }
+        }
+    });
+
     return this.permutations;
 };
 
-GridState.prototype.compareStates = function (stateA, stateB) {
-    return stateA === stateB;
+GridState.prototype.areStatesSimilar = function (stateA, stateB) {
+    return stateA !== stateB;
 };
 
 GridState.prototype.addToSolutions = function (totalDepth, gridState) {
