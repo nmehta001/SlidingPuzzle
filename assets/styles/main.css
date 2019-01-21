@@ -6,6 +6,10 @@
     z-index: 2;
 }
 
+tr:nth-child(n+8) > td {
+    border: none;
+}
+
 .grid td {
     cursor: pointer;
     width: 81px;
