@@ -47,13 +47,6 @@ Block.prototype.draw = function (ctx) {
     ctx.fillText(this.letter, this.x, this.y + 72);
 };
 
-Block.prototype.contains = function (mouseX, mouseY) {
-    // All we have to do is make sure the Mouse X,Y fall in the area between
-    // the shape's X and (X + Width) and its Y and (Y + Height)
-    return (this.x <= mouseX) && (this.x + this.width >= mouseX)
-        && (this.y <= mouseY) && (this.y + this.height >= mouseY);
-};
-
 const randomColor = (() => {
 
     const randomInt = (min, max) => {
@@ -91,7 +84,6 @@ function Grid(rows, cols, callback) {
  * Canvas State Modifications and methods
  */
 function CanvasState(canvas) {
-    this.canvas = canvas;
     this.width = canvas.width;
     this.height = canvas.height;
     this.ctx = canvas.getContext('2d');
@@ -102,60 +94,7 @@ function CanvasState(canvas) {
     // Collection of items to draw
     this.blocks = [];
 
-    this.isDragging = false;
-    this.selection = null;
-
-    this.dragOffX = 0;
-    this.dragOffY = 0;
-
     const myState = this;
-
-    // Up, down, and move are for isDragging
-    canvas.addEventListener('mousedown', function (e) {
-        let mouse = myState.getMouse(e);
-        let mouseX = mouse.x;
-        let mouseY = mouse.y;
-        let blocks = myState.blocks;
-        for (let i = blocks.length - 1; i >= 0; i--) {
-            if (blocks[i].contains(mouseX, mouseY)) {
-                let mySel = blocks[i];
-                // Keep track of where in the object we clicked
-                // move smoothly on position clicked
-                myState.dragOffX = mouseX - mySel.x;
-                myState.dragOffY = mouseY - mySel.y;
-                myState.dragOffY = mouseY - mySel.y;
-                myState.isDragging = true;
-                myState.selection = mySel;
-                myState.valid = false;
-                return;
-            }
-        }
-
-        // If there was an object selected, we deselect it
-        if (myState.selection) {
-            myState.selection = null;
-            myState.valid = false; // Need to clear the old selection border
-        }
-    }, true);
-
-    canvas.addEventListener('mousemove', function (e) {
-        if (myState.isDragging) {
-            const mouse = myState.getMouse(e);
-            // Use offset so we don't drag by top left corner
-            myState.selection.x = mouse.x - myState.dragOffX;
-            myState.selection.y = mouse.y - myState.dragOffY;
-            myState.valid = false;
-            console.log(myState)
-        }
-    }, true);
-
-    canvas.addEventListener('mouseup', function (e) {
-        myState.isDragging = false;
-    }, true);
-
-    this.selectionColor = '#E7004E';
-    this.selectionWidth = 1;
-    this.interval = 30;
 
     setInterval(function () {
         myState.draw();
@@ -186,36 +125,8 @@ CanvasState.prototype.draw = function () {
             blocks[i].draw(ctx);
         }
 
-        // draw selection
-        if (this.selection != null) {
-            ctx.strokeStyle = this.selectionColor;
-            ctx.lineWidth = this.selectionWidth;
-            let mySel = this.selection;
-            ctx.strokeRect(mySel.x, mySel.y, mySel.width, mySel.height);
-        }
-
         this.valid = true;
     }
-};
-
-// Creates an object with x and y defined,
-// set to the mouse position relative to the state's canvas
-CanvasState.prototype.getMouse = function (e) {
-    let element = this.canvas, offsetX = 0, offsetY = 0, mouseX, mouseY;
-
-    // Compute the total offset
-    if (element.offsetParent !== undefined) {
-        do {
-            offsetX += element.offsetLeft;
-            offsetY += element.offsetTop;
-        } while ((element = element.offsetParent));
-    }
-
-    mouseX = e.pageX - offsetX;
-    mouseY = e.pageY - offsetY;
-
-    // We return a simple javascript object (a hash) with x and y defined
-    return {x: mouseX, y: mouseY};
 };
 
 /**
