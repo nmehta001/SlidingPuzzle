@@ -14,40 +14,65 @@ const pieces = [
     {dims: {height: 1, width: 1}, letter: "J"},
 ];
 
+let targetPiece;
+
 const coords = [
     {x: 0, y: 0}, {x: 1, y: 0}, {x: 3, y: 0}, {x: 0, y: 2},
     {x: 1, y: 2}, {x: 3, y: 2}, {x: 1, y: 3}, {x: 2, y: 3},
     {x: 0, y: 4}, {x: 3, y: 4}
 ];
 
-function Grid(rows, cols) {
-    const grid = document.createElement("table");
-    grid.className = "grid";
-
-    for (let r = 0; r < rows; r++) {
-        let tr = grid.appendChild(document.createElement("tr"));
-        for (let c = 0; c < cols; c++) {
-            tr.appendChild(document.createElement("td"));
+function setTargetPiece(letter) {
+    pieces.forEach(piece => {
+        if (piece.letter === letter) {
+            targetPiece = piece
         }
-    }
-    return grid;
+    });
 }
 
+function Grid(rows, cols) {
+    this.grid = document.createElement("table");
+    this.grid.className = "grid";
+    this.gridItems = [];
+
+    let i = 0;
+    for (let r = 0; r < rows; r++) {
+        let tr = this.grid.appendChild(document.createElement("tr"));
+        for (let c = 0; c < cols; c++) {
+            tr.appendChild(document.createElement("td"));
+
+            let item = {
+                position: i,
+                isCorner: this.setIsCorner(cols, c, rows, r),
+            };
+
+            this.gridItems.push(item);
+            i++;
+        }
+    }
+
+    console.log(this.gridItems)
+
+    return this.grid;
+}
+
+Grid.prototype.setIsCorner = function (cols, c, rows, r) {
+    return (cols/(c+1) === cols || cols/(c+1) === 1) && (rows/(r+1) === rows || rows/(r+1) === 1);
+};
 
 function GridState() {
     this.permutations = [];
     this.initalState = [];
+    this.emptyCells = [];
     this.seen = buckets.Stack();
     this.solutions = buckets.Stack();
 }
 
-GridState.prototype.setInitialState = function (grid) {
+GridState.prototype.setInitialState = function () {
     pieces.forEach((piece, i) => {
         let item = [piece, coords[i]];
         this.initalState.push(item);
     });
-
-    console.log(grid)
 };
 
 GridState.prototype.getPermutations = function () {
@@ -64,6 +89,10 @@ GridState.prototype.getPermutations = function () {
     });
 
     return this.permutations;
+};
+
+GridState.prototype.trackEmptyCells = function (gridState) {
+
 };
 
 GridState.prototype.areStatesSimilar = function (stateA, stateB) {
@@ -86,19 +115,19 @@ GridState.prototype.clearSeen = function () {
 };
 
 let init = () => {
-    const grid = new Grid(5, 4, function (el, row, col) {
-        console.log("You clicked on element:", el);
-        console.log("You clicked on row:", row);
-        console.log("You clicked on col:", col);
-
-        el.className = "clicked";
-    });
+    const grid = new Grid(5, 4);
 
     document.body.appendChild(grid);
 
     let gridState = new GridState();
 
-    gridState.setInitialState(grid);
+    console.log(gridState);
+
+    gridState.setInitialState();
+
+    const letter = "B";
+
+    setTargetPiece(letter);
 };
 
 window.addEventListener("load", () => {
