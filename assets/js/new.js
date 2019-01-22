@@ -77,10 +77,29 @@ Grid.prototype.setIsCorner = function (cols, c, rows, r) {
  */
 function GridState() {
     this.states = buckets.Stack();
+    this.initalState = [[], []];
     this.currentState = [[], []];
     this.seen = buckets.Stack();
     this.solutions = buckets.Stack();
 }
+
+GridState.prototype.setInitialState = function () {
+    this.initalState = this.currentState;
+};
+
+GridState.prototype.generateState = function () {
+    Object.keys(pieces).forEach((piece) => {
+        Object.keys(coords).forEach((coOrd) => {
+            if (piece === coOrd) {
+                for (let i = coords[coOrd].x; i < pieces[piece].width; i++) {
+                    for (let j = coords[coOrd].y; j < pieces[piece].height; j++) {
+                        this.currentState[i][j] = 1;
+                    }
+                }
+            }
+        });
+    });
+};
 
 GridState.prototype.getAllMoves = function () {
     Object.keys(pieces).forEach((piece, i) => {
@@ -102,21 +121,6 @@ GridState.prototype.getAllMoves = function () {
         }
     });
 };
-
-GridState.prototype.generateState = function () {
-    Object.keys(pieces).forEach((piece) => {
-        Object.keys(coords).forEach((coOrd) => {
-            if (piece === coOrd) {
-                for (let i = coords[coOrd].x; i < pieces[piece].width; i++) {
-                    for (let j = coords[coOrd].y; j < pieces[piece].height; j++) {
-                        this.currentState[i][j] = 1;
-                    }
-                }
-            }
-        });
-    });
-};
-
 
 GridState.prototype.addToSolutions = function (totalDepth, gridState) {
     let dict = {
@@ -153,7 +157,8 @@ let init = () => {
 
     let gridState = new GridState();
 
-    gridState.generateState()
+    gridState.generateState();
+    gridState.setInitialState();
 
     // gridState.getAllMoves();
 };
