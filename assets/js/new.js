@@ -76,30 +76,9 @@ Grid.prototype.setIsCorner = function (cols, c, rows, r) {
  * State management fro the grid
  */
 function GridState() {
-    this.permutations = [];
-    this.initalState = {};
-    this.state = [];
-    this.emptyCells = [];
     this.seen = buckets.Stack();
     this.solutions = buckets.Stack();
 }
-
-/**
- * The state of the board on first load
- * @returns {GridState}
- */
-GridState.prototype.setInitialState = function () {
-    this.initalState = coords;
-    return this.initalState;
-};
-
-GridState.prototype.trackEmptyCells = function (gridState) {
-
-};
-
-GridState.prototype.areStatesSimilar = function (stateA, stateB) {
-    return stateA !== stateB;
-};
 
 GridState.prototype.getAllMoves = function () {
     Object.keys(pieces).forEach((piece, i) => {
@@ -114,10 +93,9 @@ GridState.prototype.getAllMoves = function () {
                     if (i === j) {
                         shiftedPieces[j] = shifted;
                     } else {
-                        shiftedPieces[j] = this.initalState[Object.keys(this.initalState)[j]]
+                        shiftedPieces[j] = coords[Object.keys(coords)[j]]
                     }
                 }
-                console.log(shiftedPieces)
             }
         }
     });
@@ -289,8 +267,6 @@ let init = () => {
     const grid = new Grid(5, 4);
 
     let gridState = new GridState();
-
-    gridState.setInitialState();
 
     gridState.getAllMoves();
 };
