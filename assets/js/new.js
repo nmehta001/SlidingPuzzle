@@ -73,9 +73,11 @@ Grid.prototype.setIsCorner = function (cols, c, rows, r) {
 };
 
 /*
- * State management fro the grid
+ * State management for the grid
  */
 function GridState() {
+    this.states = buckets.Stack();
+    this.currentState = [[], []];
     this.seen = buckets.Stack();
     this.solutions = buckets.Stack();
 }
@@ -93,11 +95,25 @@ GridState.prototype.getAllMoves = function () {
                     if (i === j) {
                         shiftedPieces[j] = shifted;
                     } else {
-                        shiftedPieces[j] = coords[Object.keys(coords)[j]]
+                        shiftedPieces[j] = coords[Object.keys(coords)[j]];
                     }
                 }
             }
         }
+    });
+};
+
+GridState.prototype.generateState = function () {
+    Object.keys(pieces).forEach((piece) => {
+        Object.keys(coords).forEach((coOrd) => {
+            if (piece === coOrd) {
+                for (let i = coords[coOrd].x; i < pieces[piece].width; i++) {
+                    for (let j = coords[coOrd].y; j < pieces[piece].height; j++) {
+                        this.currentState[i][j] = 1;
+                    }
+                }
+            }
+        });
     });
 };
 
@@ -126,149 +142,20 @@ let cloneAndShift = (piece, x, y) => {
 };
 
 function blockFits(piece) {
-    return getLeft(piece) >= 0 && getTop(piece) >= 0 &&
-        getRight(piece, key(piece)) <= getWidth(key(piece))
-        && getBottom(piece, key(piece)) <= getHeight(key(piece));
+    let key = key(piece);
+    return piece.x >= 0 && piece.y >= 0
+        && (piece.x + (pieces[key].width - 1)) <= (pieces[key].width - 1)
+        && (piece.y + (pieces[key].height-1)) <= (pieces[key].height -1);
 }
-
-/**
- * Check if the newPieces position overlaps with the oldPiece
- * @param newPiece
- * @param excludeIndex
- * @returns {boolean}
- */
-function pieceOverlaps(newPiece, excludeIndex) {
-    for (let i = 0; i < piecesLength(); i++) {
-        if (excludeIndex === i) continue;
-        let oldKey = Object.keys(pieces)[i];
-        let oldPiece = coords[oldKey];
-        if (overlaps(oldPiece, newPiece)) return true;
-    }
-
-    return false;
-}
-
-/**
- * Check all edges for overlaps
- * @param oldPiece
- * @param newPiece
- * @returns {boolean}
- */
-function overlaps(oldPiece, newPiece) {
-    let key1 = key(oldPiece);
-    let key2 = key(newPiece);
-
-    const pieceOneTop = getTop(oldPiece);
-    const pieceOneRight = getRight(oldPiece, key1);
-    const pieceOneLeft = getLeft(oldPiece);
-    const pieceOneBottom = getBottom(oldPiece, key1);
-
-    const pieceTwoTop = getTop(newPiece);
-    const pieceTwoRight = getRight(newPiece, key2);
-    const pieceTwoLeft = getLeft(newPiece);
-    const pieceTwoBottom = getBottom(newPiece, key2);
-
-    if (pieceOneRight <= pieceTwoLeft || pieceOneBottom <= pieceTwoTop) return false;
-    if (pieceTwoRight <= pieceOneLeft || pieceTwoBottom <= pieceOneTop) return false;
-
-    let topOverlap = Math.max(pieceOneTop, pieceTwoTop);
-    let rightOverlap = Math.max(pieceOneRight, pieceTwoRight);
-    let bottomOverlap = Math.max(pieceOneBottom, pieceTwoBottom);
-    let leftOverlap = Math.max(pieceOneLeft, pieceTwoLeft);
-
-    for (let y = topOverlap; y < bottomOverlap; y++) {
-        for (let x = leftOverlap; x < rightOverlap; x++) {
-            if (hasOccupant(x, y, oldPiece, key1) && hasOccupant(x, y, newPiece, key2))
-                return true;
-        }
-    }
-
-    return false;
-}
-
-/**
- * Check if grid has piece occupying the area where current piece can be moved
- * @param x
- * @param y
- * @param piece
- * @param key
- * @returns {boolean}
- */
-function hasOccupant(x, y, piece, key) {
-    return (getLeft(piece) > x || getRight(piece, key) <= x || getTop(piece) > y || getBottom(piece, key) <= y);
-}
-
-/**
- * Helper method for getting piece Key
- * @param piece
- * @returns {string}
- */
-let key = (piece) => {
-    return Object.keys(coords).find(key => coords[key] === piece);
-};
-
-/**
- * Helper method for left of piece
- * @param piece
- * @returns {number}
- */
-let getLeft = piece => {
-    return piece.x
-};
-
-/**
- * Helper method for right of piece
- * @param piece
- * @param key
- * @returns {number}
- */
-let getRight = (piece, key) => {
-    return getLeft(piece) + getWidth(key);
-};
-
-/**
- * Helper method for top of piece
- * @param piece
- * @returns {number}
- */
-let getTop = piece => {
-    return piece.y;
-};
-
-/**
- * Helper method for bottom of piece
- * @param piece
- * @param key
- * @returns {number}
- */
-let getBottom = (piece, key) => {
-    return getTop(piece) + getHeight(key);
-};
-
-/**
- * Helper method for height of piece
- * @param key
- * @returns {number}
- */
-let getHeight = key => {
-    return pieces[key].height;
-};
-
-/**
- * Helper method for width of piece
- * @param key
- * @returns {number}
- */
-let getWidth = key => {
-    return pieces[key].width;
-};
 
 let init = () => {
     const grid = new Grid(5, 4);
 
     let gridState = new GridState();
 
-    gridState.getAllMoves();
+    gridState.generateState()
+
+    // gridState.getAllMoves();
 };
 
 window.addEventListener("load", () => {
