@@ -1,7 +1,7 @@
 // Pass in index to recognise which way to move
 // Negative will go left and up in respective axis
-const MOVESET_X = [0, 1, 0, -1, 0, 2, 0, -2];
-const MOVESET_Y = [1, 0, -1, 0, 2, 0, -2, 0];
+const MOVE_SET_X = [0, 1, 0, -1, 0, 2, 0, -2];
+const MOVE_SET_Y = [1, 0, -1, 0, 2, 0, -2, 0];
 
 // TODO: Make this dynamic
 // Pieces dictionary, contains only height and width
@@ -55,7 +55,6 @@ function Grid(rows, cols) {
             let item = {
                 position: i,
                 isCorner: this.setIsCorner(cols, c, rows, r),
-                // constraints: this.setConstraints(),
                 coords: {x: r, y: c}
             };
 
@@ -105,7 +104,7 @@ GridState.prototype.getAllMoves = function () {
     Object.keys(pieces).forEach((piece, i) => {
         let queriedPiece = coords[piece];
         for (let move = 0; move < 8; move++) {
-            let shifted = cloneAndShift(queriedPiece, MOVESET_X[move], MOVESET_Y[move]);
+            let shifted = cloneAndShift(queriedPiece, MOVE_SET_X[move], MOVE_SET_Y[move]);
 
             if (blockFits(shifted) && !pieceOverlaps(shifted, i)) {
                 let shiftedPieces = [];
@@ -137,7 +136,6 @@ GridState.prototype.clearSeen = function () {
     return this.seen.clear();
 };
 
-
 let cloneAndShift = (piece, x, y) => {
     piece.x += x;
     piece.y += y;
@@ -151,6 +149,15 @@ function blockFits(piece) {
         && (piece.x + (pieces[key].width - 1)) <= (pieces[key].width - 1)
         && (piece.y + (pieces[key].height-1)) <= (pieces[key].height -1);
 }
+
+/**
+ * Helper method for getting piece Key
+ * @param piece
+ * @returns {string}
+ */
+let key = (piece) => {
+    return Object.keys(coords).find(key => coords[key] === piece);
+};
 
 let init = () => {
     const grid = new Grid(5, 4);
