@@ -107,6 +107,7 @@ Solver.prototype.run = function () {
     this.currentDepth = this.pending.peek();
 };
 
+
 Solver.prototype.addChildrenToPending = function () {
     this.getAllMoves(this.temp);
     let numChildren = this.temp.length;
@@ -120,12 +121,13 @@ Solver.prototype.addChildrenToPending = function () {
 
 /**
  * Get all possible moves for the current state
+ * @param dest
  */
-Solver.prototype.getAllMoves = function (destination) {
+Solver.prototype.getAllMoves = function (dest) {
     for (let i = 0; i < piecesLength(); i++) {
         // Get the piece to move
         const k = Object.keys(pieces)[i];
-        const queriedPiece = pieces[k];
+        const queriedPiece = coords[k];
 
         // The piece can move in 8 different ways -> See MOVESET_X and MOVESET_Y
         for (let move = 0; move < 8; move++) {
@@ -135,8 +137,6 @@ Solver.prototype.getAllMoves = function (destination) {
             if (blockFits(shifted) && !pieceOverlaps(shifted, i)) {
                 const newState = [];
 
-                console.log("I AM WORKING")
-
                 for (let j = 0; j < piecesLength(); j++) {
                     if (i === j) {
                         newState[Object.keys(newState)[j]] = shifted;
@@ -145,21 +145,20 @@ Solver.prototype.getAllMoves = function (destination) {
                     }
                 }
 
-                destination.push(newState)
+                dest.push(newState)
             }
         }
     }
-};
+}
+;
 
 /**
  * Track what states we have already seen
  * Useful to later ignore states so that we don't end up with duplicates
  */
 Solver.prototype.addStateToPending = function (state) {
-    console.log(this.seen.add(state))
     if (this.seen.add(state)) {
         this.pending.add(state);
-        console.log(this.pending.toArray())
     } else {
         this.duplicatePositions++;
     }
@@ -240,7 +239,7 @@ function overlaps(occupying, moved) {
 
     for (let y = topOverlap; y < bottomOverlap; y++) {
         for (let x = leftOverlap; x < rightOverlap; x++) {
-            if (hasOccupant(x, y, occupying) && hasOccupant(x, y, moved) && occupiesImmutable(moved)) {
+            if (hasOccupant(x, y, occupying) && hasOccupant(x, y, moved) && !occupiesImmutable(moved)) {
                 return true;
             }
         }
