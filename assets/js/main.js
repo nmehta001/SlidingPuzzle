@@ -6,20 +6,20 @@ const MOVESET_Y = [1, 0, -1, 0, 2, 0, -2, 0];
 // TODO: Make this dynamic
 // Pieces dictionary, contains only height and width
 const pieces = {
-    A: { height: 2, width: 1 },
-    B: { height: 2, width: 2 },
-    C: { height: 2, width: 1 },
-    D: { height: 2, width: 1 },
-    E: { height: 1, width: 2 },
-    F: { height: 2, width: 1 },
-    G: { height: 1, width: 1 },
-    H: { height: 1, width: 1 },
-    I: { height: 1, width: 1 },
-    J: { height: 1, width: 1 },
+    A: {height: 2, width: 1},
+    B: {height: 2, width: 2},
+    C: {height: 2, width: 1},
+    D: {height: 2, width: 1},
+    E: {height: 1, width: 2},
+    F: {height: 2, width: 1},
+    G: {height: 1, width: 1},
+    H: {height: 1, width: 1},
+    I: {height: 1, width: 1},
+    J: {height: 1, width: 1},
 };
 
 const GRID_WIDTH = 4;
-const GRID_HEIGHT = 5;
+const GRID_HEIGHT = 6;
 
 /**
  * Not fun to keep writing this, have a helper method
@@ -29,16 +29,20 @@ const piecesLength = () => Object.keys(pieces).length;
 
 // Coords dictionary, contains only x and y
 const coords = {
-    A: { x: 0, y: 0 },
-    B: { x: 1, y: 0 },
-    C: { x: 3, y: 0 },
-    D: { x: 0, y: 2 },
-    E: { x: 1, y: 2 },
-    F: { x: 3, y: 2 },
-    G: { x: 1, y: 3 },
-    H: { x: 2, y: 3 },
-    I: { x: 0, y: 4 },
-    J: { x: 3, y: 4 },
+    A: {x: 0, y: 0},
+    B: {x: 1, y: 0},
+    C: {x: 3, y: 0},
+    D: {x: 0, y: 2},
+    E: {x: 1, y: 2},
+    F: {x: 3, y: 2},
+    G: {x: 1, y: 3},
+    H: {x: 2, y: 3},
+    I: {x: 0, y: 4},
+    J: {x: 3, y: 4},
+};
+
+const goal = {
+    x: 1, y: 4
 };
 
 /**
@@ -63,26 +67,65 @@ function Grid(rows, cols) {
     document.body.appendChild(this.grid);
 }
 
-// State management for the grid
-function GridState() {
-    this.states = buckets.Stack();
-    this.depth = 0;
-    this.seen = buckets.Stack();
-    this.solutions = buckets.Stack();
+function Solver(state) {
+    this.seen = new Set();
+    this.pending = buckets.Stack();
+    this.temp = [];
+    this.currentDepth = 0;
+    this.positionsEvaluated = 0;
+    this.duplicatePositions = 0;
+
+    this.addStateToPending(state)
 }
+
+Solver.prototype.run = function () {
+    let date = new Date();
+    let start = date.getTime();
+
+    do {
+        let stepsRemaining = 50;
+
+        while (stepsRemaining-- > 0) {
+            let currentState = this.pending.pop();
+            this.positionsEvaluated++;
+
+            if (isAtGoal(currentState)) {
+                alert("FOUND");
+                return;
+            }
+
+            this.addChildrenToPending();
+
+            if (this.pending.isEmpty()) {
+                alert("FAILED");
+                return;
+            }
+
+        }
+    } while ((date.getMilliseconds() - start) < 100);
+
+    this.currentDepth = this.pending.peek();
+};
+
+Solver.prototype.addChildrenToPending = function () {
+    this.getAllMoves(this.temp);
+    let numChildren = this.temp.length;
+    for (let i = 0; i < numChildren; i++) {
+        let s = this.temp[i];
+        if (s !== null) {
+            this.addStateToPending(s)
+        }
+    }
+};
 
 /**
  * Get all possible moves for the current state
  */
-GridState.prototype.getAllMoves = function (gridState) {
-    const states = gridState.toArray();
-    const previousState = states.length <= 1 ? states[this.depth] : states[this.depth - 1];
-    const state = states[this.depth];
-
+Solver.prototype.getAllMoves = function (destination) {
     for (let i = 0; i < piecesLength(); i++) {
         // Get the piece to move
         const k = Object.keys(pieces)[i];
-        const queriedPiece = state[k];
+        const queriedPiece = pieces[k];
 
         // The piece can move in 8 different ways -> See MOVESET_X and MOVESET_Y
         for (let move = 0; move < 8; move++) {
@@ -90,66 +133,38 @@ GridState.prototype.getAllMoves = function (gridState) {
             const shifted = shift(queriedPiece, MOVESET_X[move], MOVESET_Y[move]);
 
             if (blockFits(shifted) && !pieceOverlaps(shifted, i)) {
-                const newState = previousState;
+                const newState = [];
+
+                console.log("I AM WORKING")
 
                 for (let j = 0; j < piecesLength(); j++) {
                     if (i === j) {
                         newState[Object.keys(newState)[j]] = shifted;
                     } else {
-                        newState[Object.keys(previousState)[j]] = previousState[Object.keys(previousState)[j]];
+                        newState[Object.keys(pieces)[j]] = pieces[Object.keys(pieces)[j]];
                     }
                 }
 
-                console.log(newState);
-
-                if (!this.alreadySeen(newState)) {
-                    this.depth++;
-                    this.addToSeen(newState);
-                    this.addToStates(newState);
-                    this.getAllMoves(this.states);
-                }
+                destination.push(newState)
             }
         }
     }
 };
 
 /**
- * Track all states as we find viable moves
- * @param state
- */
-GridState.prototype.addToStates = function (state) {
-    this.states.add(state);
-};
-
-/**
- * If the state happens to be a solution, add to the list
- * Later we can compare which solution has the least depth and offer it as the optimal solution
- * @param totalDepth
- * @param gridState
- */
-GridState.prototype.addToSolutions = function (totalDepth, gridState) {
-    const dict = {
-        totalDepth: gridState,
-    };
-    this.solutions.push(dict);
-};
-
-/**
  * Track what states we have already seen
  * Useful to later ignore states so that we don't end up with duplicates
  */
-GridState.prototype.addToSeen = function (state) {
-    this.seen.add(state);
+Solver.prototype.addStateToPending = function (state) {
+    console.log(this.seen.add(state))
+    if (this.seen.add(state)) {
+        this.pending.add(state);
+        console.log(this.pending.toArray())
+    } else {
+        this.duplicatePositions++;
+    }
 };
 
-/**
- * Check if the state has been seen before
- * @param state
- * @returns {boolean}
- */
-GridState.prototype.alreadySeen = function (state) {
-    return this.seen.contains(state);
-};
 
 /**
  * Move the piece from its top left positioning
@@ -225,7 +240,9 @@ function overlaps(occupying, moved) {
 
     for (let y = topOverlap; y < bottomOverlap; y++) {
         for (let x = leftOverlap; x < rightOverlap; x++) {
-            if (hasOccupant(x, y, occupying) && hasOccupant(x, y, moved)) { return true; }
+            if (hasOccupant(x, y, occupying) && hasOccupant(x, y, moved) && occupiesImmutable(moved)) {
+                return true;
+            }
         }
     }
 
@@ -245,15 +262,22 @@ function hasOccupant(x, y, piece) {
         || piece.y > y || (piece.y + pieces[k].height) <= y);
 }
 
+function occupiesImmutable(piece) {
+    return (piece.x === 0 || piece.x === 3) && piece.y === 5;
+}
+
+function isAtGoal(state) {
+    let key = Object.keys(state)[1];
+    let coords = state[key];
+    return (coords.x === goal.x) && (coords.y === goal.y);
+}
+
 const init = () => {
-    const grid = new Grid(GRID_HEIGHT, GRID_WIDTH);
+    new Grid(GRID_HEIGHT, GRID_WIDTH);
 
-    const gridState = new GridState();
+    let puzzleSolver = new Solver(coords);
 
-    // Add the initial state
-    gridState.addToStates(coords);
-
-    gridState.getAllMoves(gridState.states);
+    puzzleSolver.run();
 };
 
 window.addEventListener('load', () => {
