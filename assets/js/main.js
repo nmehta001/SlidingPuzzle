@@ -1,7 +1,7 @@
 // Pass in index to recognise which way to move
 // Negative will go left and up in respective axis
-const MOVESET_X = [0, 1, 0, -1, 0, 2, 0, -2];
-const MOVESET_Y = [1, 0, -1, 0, 2, 0, -2, 0];
+const MOVE_MATRIX_X = [0, 1, 0, -1, 0, 2, 0, -2];
+const MOVE_MATRIX_Y = [1, 0, -1, 0, 2, 0, -2, 0];
 
 // TODO: Make this dynamic
 // Pieces dictionary, contains only height and width
@@ -129,19 +129,24 @@ Solver.prototype.getAllMoves = function (dest) {
         const k = Object.keys(pieces)[i];
         const queriedPiece = coords[k];
 
-        // The piece can move in 8 different ways -> See MOVESET_X and MOVESET_Y
+        console.log(`Assessing piece ${k}`);
+        console.log(`Starting coordinates are x: ${queriedPiece.x}, y: ${queriedPiece.y}`)
+
+        // The piece can move in 8 different ways -> See MOVE_MATRIX_X and MOVE_MATRIX_Y
         for (let move = 0; move < 8; move++) {
             // Shift the currently selected piece by x and y of the below arrays
-            const shifted = shift(queriedPiece, MOVESET_X[move], MOVESET_Y[move]);
+            const shifted = shift(queriedPiece, MOVE_MATRIX_X[move], MOVE_MATRIX_Y[move]);
+
+            console.log(`Moving to: x: ${shifted.x}, y: ${shifted.y}`)
 
             if (blockFits(shifted) && !pieceOverlaps(shifted, i)) {
-                const newState = [];
+                const newState = coords;
 
                 for (let j = 0; j < piecesLength(); j++) {
                     if (i === j) {
                         newState[Object.keys(newState)[j]] = shifted;
                     } else {
-                        newState[Object.keys(pieces)[j]] = pieces[Object.keys(pieces)[j]];
+                        newState[Object.keys(pieces)[j]] = coords[Object.keys(coords)[j]];
                     }
                 }
 
@@ -149,8 +154,7 @@ Solver.prototype.getAllMoves = function (dest) {
             }
         }
     }
-}
-;
+};
 
 /**
  * Track what states we have already seen
@@ -163,7 +167,6 @@ Solver.prototype.addStateToPending = function (state) {
         this.duplicatePositions++;
     }
 };
-
 
 /**
  * Move the piece from its top left positioning
@@ -187,6 +190,11 @@ let shift = (piece, x, y) => {
  */
 function blockFits(piece) {
     const k = key(piece);
+
+    console.log(`Piece fits within grid: ${piece.x >= 0 && piece.y >= 0 &&
+    (piece.x + pieces[k].width) <= GRID_WIDTH &&
+    (piece.y + pieces[k].height) <= GRID_HEIGHT}`);
+
     return piece.x >= 0 && piece.y >= 0 &&
         (piece.x + pieces[k].width) <= GRID_WIDTH &&
         (piece.y + pieces[k].height) <= GRID_HEIGHT;
@@ -257,11 +265,17 @@ function overlaps(occupying, moved) {
  */
 function hasOccupant(x, y, piece) {
     const k = key(piece);
+
+    console.log(`The piece ${k} is moving to an occupied area ${(piece.x > x || (piece.x + pieces[k].width) <= x
+        || piece.y > y || (piece.y + pieces[k].height) <= y)}`)
+
     return (piece.x > x || (piece.x + pieces[k].width) <= x
         || piece.y > y || (piece.y + pieces[k].height) <= y);
 }
 
 function occupiesImmutable(piece) {
+    const k = key(piece)
+    console.log(`${k} moving to an immutable area: ${(piece.x === 0 || piece.x === 3) && piece.y === 5}`)
     return (piece.x === 0 || piece.x === 3) && piece.y === 5;
 }
 
