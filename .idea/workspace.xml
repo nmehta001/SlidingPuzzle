@@ -24,8 +24,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/assets/js/main.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="632">
-                  <caret line="152" selection-start-line="152" selection-end-line="152" />
+                <state relative-caret-position="398">
+                  <caret line="211" column="68" selection-start-line="211" selection-start-column="68" selection-end-line="211" selection-end-column="68" />
                   <folding>
                     <element signature="n#!!doc" expanded="true" />
                   </folding>
@@ -45,11 +45,20 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/assets/js/main.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-6038">
-                  <caret line="3" column="11" selection-start-line="3" selection-start-column="11" selection-end-line="3" selection-end-column="11" />
+                <state relative-caret-position="-874">
+                  <caret line="211" column="39" selection-start-line="211" selection-start-column="39" selection-end-line="211" selection-end-column="39" />
                   <folding>
                     <element signature="n#!!doc" expanded="true" />
                   </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/assets/js/alogirithm.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="161">
+                  <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
                 </state>
               </provider>
             </entry>
@@ -70,8 +79,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>mySel</find>
-      <find>se</find>
       <find>draw</find>
       <find>CanvasState.draw</find>
       <find>.draw</find>
@@ -100,6 +107,8 @@
       <find>states</find>
       <find>addStateToPending</find>
       <find>getAll</find>
+      <find>key</find>
+      <find>key =</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -121,6 +130,7 @@
         <option value="$PROJECT_DIR$/main.html" />
         <option value="$PROJECT_DIR$/assets/js/new.js" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/assets/js/alogirithm.js" />
         <option value="$PROJECT_DIR$/assets/js/main.js" />
       </list>
     </option>
@@ -136,7 +146,31 @@
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes />
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="SlidingPuzzleMP" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SlidingPuzzleMP" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SlidingPuzzleMP" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SlidingPuzzleMP" type="462c0819:PsiDirectoryNode" />
+              <item name="assets" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SlidingPuzzleMP" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SlidingPuzzleMP" type="462c0819:PsiDirectoryNode" />
+              <item name="assets" type="462c0819:PsiDirectoryNode" />
+              <item name="js" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
@@ -178,15 +212,16 @@
       <workItem from="1548232043618" duration="23099000" />
       <workItem from="1548260565638" duration="1230000" />
       <workItem from="1548337138445" duration="16400000" />
-      <workItem from="1548416940801" duration="3647000" />
+      <workItem from="1548416940801" duration="8378000" />
+      <workItem from="1548499527850" duration="10186000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="130301000" />
+    <option name="totallyTimeSpent" value="145218000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="25" width="1920" height="1055" extended-state="6" />
+    <frame x="0" y="30" width="1920" height="1050" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4983871" weight="0.27403846" />
@@ -201,7 +236,7 @@
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" />
-      <window_info anchor="bottom" id="Terminal" order="9" weight="0.32756758" />
+      <window_info anchor="bottom" id="Terminal" order="9" weight="0.32568306" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="TypeScript" order="11" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -210,11 +245,11 @@
       <window_info anchor="right" id="Key Promoter X" order="3" />
     </layout>
     <layout-to-restore>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4983871" visible="true" weight="0.27403846" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4983871" visible="true" weight="0.27403846" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" sideWeight="0.5016129" side_tool="true" weight="0.12873931" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.3297414" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32972974" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
@@ -222,7 +257,7 @@
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" />
-      <window_info anchor="bottom" id="Terminal" order="9" weight="0.3275862" />
+      <window_info anchor="bottom" id="Terminal" order="9" weight="0.32568306" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="TypeScript" order="11" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -270,10 +305,17 @@
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/assets/js/alogirithm.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="161">
+          <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/assets/js/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="632">
-          <caret line="152" selection-start-line="152" selection-end-line="152" />
+        <state relative-caret-position="398">
+          <caret line="211" column="68" selection-start-line="211" selection-start-column="68" selection-end-line="211" selection-end-column="68" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>

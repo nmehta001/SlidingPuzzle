@@ -46,13 +46,11 @@ const goal = {
 };
 
 /**
- * Helper method for getting piece Key
- * @param piece
- * @returns {string}
+ * Build visible Grid on screen
+ * @param rows
+ * @param cols
+ * @constructor
  */
-const key = piece => Object.keys(coords).find(k => coords[k] === piece);
-
-// Build visible Grid on screen
 function Grid(rows, cols) {
     this.grid = document.createElement('table');
     this.grid.className = 'grid';
@@ -103,8 +101,6 @@ Solver.prototype.run = function () {
 
         }
     } while ((date.getMilliseconds() - start) < 100);
-
-    this.currentDepth = this.pending.peek();
 };
 
 
@@ -124,35 +120,37 @@ Solver.prototype.addChildrenToPending = function () {
  * @param dest
  */
 Solver.prototype.getAllMoves = function (dest) {
+    // Iterate through the total number of pieces
     for (let i = 0; i < piecesLength(); i++) {
-        // Get the piece to move
         const k = Object.keys(pieces)[i];
-        const queriedPiece = coords[k];
+        const topLeftCoordinates = coords[Object.keys(coords)[i]];
+        const comparableArray = dest.length > 0 ? dest[this.currentDepth] : coords;
 
         console.log(`Assessing piece ${k}`);
-        console.log(`Starting coordinates are x: ${queriedPiece.x}, y: ${queriedPiece.y}`)
+        console.log(`Starting coordinates, x: ${topLeftCoordinates.x}, y : ${topLeftCoordinates.y}`);
 
-        // The piece can move in 8 different ways -> See MOVE_MATRIX_X and MOVE_MATRIX_Y
         for (let move = 0; move < 8; move++) {
-            // Shift the currently selected piece by x and y of the below arrays
-            const shifted = shift(queriedPiece, MOVE_MATRIX_X[move], MOVE_MATRIX_Y[move]);
+            // Clone the object otherwise it shifts topLeftCoordinates too
+            const topLeftShifted = shift(Object.assign({}, topLeftCoordinates), MOVE_MATRIX_X[move], MOVE_MATRIX_Y[move]);
+            let newState = [];
 
-            console.log(`Moving to: x: ${shifted.x}, y: ${shifted.y}`)
+            console.log(`Moving ${k} to x: ${topLeftShifted.x}, y: ${topLeftShifted.y}`);
 
-            if (blockFits(shifted) && !pieceOverlaps(shifted, i)) {
-                const newState = coords;
-
+            if (blockFits(k, topLeftShifted) && !pieceOverlaps(k, comparableArray, topLeftShifted, i) && !occupiesImmutable(topLeftShifted)) {
                 for (let j = 0; j < piecesLength(); j++) {
                     if (i === j) {
-                        newState[Object.keys(newState)[j]] = shifted;
+                        newState.push(topLeftShifted)
                     } else {
-                        newState[Object.keys(pieces)[j]] = coords[Object.keys(coords)[j]];
+                        newState.push(topLeftCoordinates);
                     }
                 }
 
-                dest.push(newState)
+                if (this.seen.has(newState)) {
+                    dest.push(newState);
+                }
             }
         }
+        this.currentDepth++;
     }
 };
 
@@ -161,7 +159,8 @@ Solver.prototype.getAllMoves = function (dest) {
  * Useful to later ignore states so that we don't end up with duplicates
  */
 Solver.prototype.addStateToPending = function (state) {
-    if (this.seen.add(state)) {
+    if (!this.seen.has(state)) {
+        this.seen.add(state);
         this.pending.add(state);
     } else {
         this.duplicatePositions++;
@@ -185,33 +184,32 @@ let shift = (piece, x, y) => {
 /**
  * Check the top left position does not go outside of the grid
  * and that the piece piece's shape does not exceed the grid
+ * @param key
  * @param piece
  * @returns {boolean}
  */
-function blockFits(piece) {
-    const k = key(piece);
-
+function blockFits(key, piece) {
     console.log(`Piece fits within grid: ${piece.x >= 0 && piece.y >= 0 &&
-    (piece.x + pieces[k].width) <= GRID_WIDTH &&
-    (piece.y + pieces[k].height) <= GRID_HEIGHT}`);
+    (piece.x + pieces[key].width) <= GRID_WIDTH &&
+    (piece.y + pieces[key].height) <= GRID_HEIGHT}`);
 
     return piece.x >= 0 && piece.y >= 0 &&
-        (piece.x + pieces[k].width) <= GRID_WIDTH &&
-        (piece.y + pieces[k].height) <= GRID_HEIGHT;
+        (piece.x + pieces[key].width) <= GRID_WIDTH &&
+        (piece.y + pieces[key].height) <= GRID_HEIGHT;
 }
 
 /**
  * Check if the moved piece's position overlaps with an occupying piece
+ * @param key
+ * @param previousState
  * @param moved
  * @param excludeIndex
  * @returns {boolean}
  */
-function pieceOverlaps(moved, excludeIndex) {
+function pieceOverlaps(key, previousState, moved, excludeIndex) {
     for (let i = 0; i < piecesLength(); i++) {
         if (excludeIndex === i) continue;
-        const occupyingKey = Object.keys(pieces)[i];
-        const occupyingPiece = coords[occupyingKey];
-        if (overlaps(occupyingPiece, moved)) return true;
+        if (overlaps(key, previousState[Object.keys(previousState)[i]], moved)) return true;
     }
 
     return false;
@@ -219,23 +217,21 @@ function pieceOverlaps(moved, excludeIndex) {
 
 /**
  * Check all edges of pieces for overlaps
+ * @param key
  * @param occupying
  * @param moved
  * @returns {boolean}
  */
-function overlaps(occupying, moved) {
-    const key1 = key(occupying);
-    const key2 = key(moved);
-
+function overlaps(key, occupying, moved) {
     const occupyingTop = occupying.y;
-    const occupyingRight = occupying.x + pieces[key1].width;
+    const occupyingRight = occupying.x + pieces[key].width;
     const occupyingLeft = occupying.x;
-    const occupyingBottom = occupying.y + pieces[key1].height;
+    const occupyingBottom = occupying.y + pieces[key].height;
 
     const movedTop = moved.y;
-    const movedRight = moved.x + pieces[key2].width;
+    const movedRight = moved.x + pieces[key].width;
     const movedLeft = moved.x;
-    const movedBottom = moved.y + pieces[key2].height;
+    const movedBottom = moved.y + pieces[key].height;
 
     if (occupyingRight <= movedLeft || occupyingBottom <= movedTop) return false;
     if (movedRight <= occupyingLeft || movedBottom <= occupyingTop) return false;
@@ -247,7 +243,7 @@ function overlaps(occupying, moved) {
 
     for (let y = topOverlap; y < bottomOverlap; y++) {
         for (let x = leftOverlap; x < rightOverlap; x++) {
-            if (hasOccupant(x, y, occupying) && hasOccupant(x, y, moved) && !occupiesImmutable(moved)) {
+            if (hasOccupant(key, x, y, occupying) && hasOccupant(key, x, y, moved)) {
                 return true;
             }
         }
@@ -258,24 +254,18 @@ function overlaps(occupying, moved) {
 
 /**
  * Check if grid has piece occupying the area where current piece is moving
+ * @param key
  * @param x
  * @param y
  * @param piece
  * @returns {boolean}
  */
-function hasOccupant(x, y, piece) {
-    const k = key(piece);
-
-    console.log(`The piece ${k} is moving to an occupied area ${(piece.x > x || (piece.x + pieces[k].width) <= x
-        || piece.y > y || (piece.y + pieces[k].height) <= y)}`)
-
-    return (piece.x > x || (piece.x + pieces[k].width) <= x
-        || piece.y > y || (piece.y + pieces[k].height) <= y);
+function hasOccupant(key, x, y, piece) {
+    return !(piece.x > x || (piece.x + pieces[key].width) <= x
+        || piece.y > y || (piece.y + pieces[key].height) <= y);
 }
 
 function occupiesImmutable(piece) {
-    const k = key(piece)
-    console.log(`${k} moving to an immutable area: ${(piece.x === 0 || piece.x === 3) && piece.y === 5}`)
     return (piece.x === 0 || piece.x === 3) && piece.y === 5;
 }
 
