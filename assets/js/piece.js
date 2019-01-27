@@ -1,3 +1,10 @@
+/**
+ * Constructor for new piece
+ * @param x
+ * @param y
+ * @param shape
+ * @constructor
+ */
 function Piece(x, y, shape) {
     this.x = x;
     this.y = y;
@@ -36,6 +43,12 @@ Piece.prototype.getY = function () {
     return this.y;
 };
 
+/**
+ * Clone the original piece, and mutate the coordinates
+ * @param x
+ * @param y
+ * @returns {Piece}
+ */
 Piece.prototype.cloneShifted = function (x, y) {
     let piece = new Piece(this.x, this.y, this.shape);
     piece.x += x;
@@ -43,6 +56,12 @@ Piece.prototype.cloneShifted = function (x, y) {
     return piece;
 };
 
+/**
+ * Check if pieces overlap
+ * @param occupying
+ * @param moved
+ * @returns {boolean}
+ */
 Piece.prototype.overlaps = function (occupying, moved) {
     if (occupying.getRight() <= moved.getLeft() || occupying.getBottom() <= moved.getLeft()) return false;
     if (moved.getRight() <= occupying.getLeft() || moved.getBottom() <= occupying.getLeft()) return false;
@@ -62,6 +81,12 @@ Piece.prototype.overlaps = function (occupying, moved) {
     return false;
 };
 
+/**
+ * Check if the grid has a containing cell
+ * @param x
+ * @param y
+ * @returns {boolean}
+ */
 Piece.prototype.hasCellAt = function (x, y) {
     return (this.getLeft() > x || this.getRight() <= x || this.getTop() > y || this.getBottom() <= y);
 };

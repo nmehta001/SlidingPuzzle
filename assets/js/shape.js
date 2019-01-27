@@ -11,6 +11,11 @@ let shapes = {
     J: {height: 1, width: 1}
 };
 
+/**
+ * Map the shape values back to the piece
+ * @param key
+ * @constructor
+ */
 function Shape(key) {
     this.height = shapes[key].height;
     this.width = shapes[key].width;
