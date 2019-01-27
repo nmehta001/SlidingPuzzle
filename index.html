@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./assets/styles/main.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/buckets/1.90.0/buckets.min.js"></script>
+    <script src="assets/js/steps.js"></script>
+    <script src="assets/js/piece.js"></script>
+    <script src="assets/js/shape.js"></script>
+
+</head>
+<body>
+
+</body>
+<script src="assets/js/grid.js"></script>
+<script src="assets/js/solver.js"></script>
+<script>
+    // let initialState = {
+    //     A: {x: 0, y: 0},
+    //     B: {x: 1, y: 0},
+    //     C: {x: 3, y: 0},
+    //     D: {x: 0, y: 2},
+    //     E: {x: 1, y: 2},
+    //     F: {x: 3, y: 2},
+    //     G: {x: 1, y: 3},
+    //     H: {x: 2, y: 3},
+    //     I: {x: 0, y: 4},
+    //     J: {x: 3, y: 4}
+    // };
+
+    let initialState = {
+        A: new Piece(0, 0, new Shape("A")),
+        B: new Piece(1, 0, new Shape("B")),
+        C: new Piece(3, 0, new Shape("C")),
+        D: new Piece(0, 2, new Shape("D")),
+        E: new Piece(1, 2, new Shape("E")),
+        F: new Piece(3, 2, new Shape("F")),
+        G: new Piece(1, 3, new Shape("G")),
+        H: new Piece(2, 3, new Shape("H")),
+        I: new Piece(0, 4, new Shape("I")),
+        J: new Piece(3, 4, new Shape("J"))
+    };
+
+    let goal = {
+        B: {x: 1, y: 4}
+    };
+
+    let grid = new Grid(5, 4, initialState, goal);
+
+    let solver = new Solver(grid);
+
+    solver.run();
+
+</script>
+</html>

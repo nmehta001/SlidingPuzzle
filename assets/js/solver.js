@@ -1,5 +1,3 @@
-const goal = {x: 1, y: 4};
-
 function Solver(grid) {
     this.pending = buckets.Stack();
     this.temp = [];
@@ -9,7 +7,10 @@ function Solver(grid) {
     this.movesChecked = 0;
     this.duplicateMoves = 0;
 
-    this.addStateToPending(grid)
+    this.addStateToPending(grid);
+
+    console.log(this);
+    console.log(this.pending.toArray())
 }
 
 Solver.prototype.addStateToPending = function (grid) {
@@ -47,7 +48,7 @@ Solver.prototype.run = function () {
             let g = this.pending.pop();
             this.movesChecked++;
 
-            let positionFromGoal = g.distanceFromGoal();
+            let positionFromGoal = g.getDistanceFromGoal();
 
             if (positionFromGoal === 0) {
                 this.answer = g;
