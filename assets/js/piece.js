@@ -21,11 +21,11 @@ Piece.prototype.getTop = function () {
 };
 
 Piece.prototype.getHeight = function () {
-    return this.shape.height;
+    return this.shape.getHeight();
 };
 
 Piece.prototype.getWidth = function () {
-    return this.shape.width;
+    return this.shape.getWidth();
 };
 
 Piece.prototype.getX = function () {
@@ -36,12 +36,8 @@ Piece.prototype.getY = function () {
     return this.y;
 };
 
-Piece.prototype.clonePiece = function () {
-    return new Piece(this);
-};
-
 Piece.prototype.cloneShifted = function (x, y) {
-    let piece = Object.assign({}, this);
+    let piece = new Piece(this.x, this.y, this.shape);
     piece.x += x;
     piece.y += y;
     return piece;

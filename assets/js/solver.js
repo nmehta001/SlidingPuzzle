@@ -3,14 +3,10 @@ function Solver(grid) {
     this.temp = [];
     this.seen = new Set();
     this.answer = null;
-    this.currentDepth = 0;
     this.movesChecked = 0;
     this.duplicateMoves = 0;
 
     this.addStateToPending(grid);
-
-    console.log(this);
-    console.log(this.pending.toArray())
 }
 
 Solver.prototype.addStateToPending = function (grid) {

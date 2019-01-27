@@ -34,13 +34,13 @@ Grid.prototype.getAllMoves = function (dest) {
                     if (i === j) {
                         state.push(moved)
                     } else {
-                        state.push(this.gridState[j].clonePiece())
+                        state.push(this.gridState[Object.keys(this.gridState)[j]]);
                     }
                 }
 
                 let nGrid = new Grid(this.height, this.width, state, this.goal);
-
-                dest.add(nGrid);
+                this.setDistanceFromGoal(nGrid);
+                dest.push(nGrid);
             }
         }
     }
@@ -63,5 +63,6 @@ Grid.prototype.getDistanceFromGoal = function () {
 };
 
 Grid.prototype.setDistanceFromGoal = function (grid) {
-    console.log(grid)
+    let coords = grid.gridState[Object.keys(grid.gridState)[1]];
+    this.goalDistance = (coords.x - this.goal[Object.keys(goal)[0]].x) + (coords.y - this.goal[Object.keys(goal)[0]].y);
 };
