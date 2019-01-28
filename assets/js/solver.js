@@ -52,27 +52,22 @@ Solver.prototype.run = function () {
     let start = new Date().getMilliseconds();
 
     do {
-        let stepsRemaining = 50;
+        let g = this.pending.pop();
+        this.movesChecked++;
 
-        while (stepsRemaining-- > 0) {
-            let g = this.pending.pop();
-            this.movesChecked++;
+        let positionFromGoal = g.getDistanceFromGoal();
 
-            let positionFromGoal = g.getDistanceFromGoal();
+        if (positionFromGoal === 0) {
+            this.answer = g;
+            alert("SOLVED");
+            return;
+        }
 
-            if (positionFromGoal === 0) {
-                this.answer = g;
-                alert("SOLVED");
-                return;
-            }
+        this.addChildrenToPending(g);
 
-            this.addChildrenToPending(g);
-
-            if (this.pending.isEmpty()) {
-                alert("FAILED");
-                return;
-            }
-
+        if (this.pending.isEmpty()) {
+            alert("FAILED");
+            return;
         }
     } while ((new Date().getMilliseconds() - start) < 100);
 };
